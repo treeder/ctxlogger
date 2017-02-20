@@ -1,0 +1,29 @@
+
+machine:
+  environment:
+    GO_VERSION: "1.8"
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - wget https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz
+    - mkdir -p $HOME/golang
+    - tar -C $HOME/golang -xvzf go${GO_VERSION}.linux-amd64.tar.gz
+    - wget https://github.com/Masterminds/glide/releases/download/v0.12.3/glide-v0.12.3-linux-amd64.tar.gz
+    - tar -C $HOME/bin -xvzf glide-v0.12.3-linux-amd64.tar.gz --strip=1
+  override:
+    - which go && go version
+    - glide --version
+
+test:
+  override:
+    - go build
+
+deployment:
+  release:
+    branch: master
+    owner: treeder
+    commands:
+      - ./release.sh
+      
