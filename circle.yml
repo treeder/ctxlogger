@@ -1,0 +1,38 @@
+
+machine:
+  environment:
+    GO_VERSION: "1.8"
+    CHECKOUT_DIR: $HOME/$CIRCLE_PROJECT_REPONAME
+    GOPATH: $HOME/go
+    GOROOT: $HOME/golang/go
+    PATH: $GOROOT/bin:$PATH
+    GH_ORG: $GOPATH/src/github.com/treeder
+    GO_PROJECT: $GH_ORG/$CIRCLE_PROJECT_REPONAME
+  services:
+    - docker
+
+dependencies:
+  pre:
+    - wget https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz
+    - mkdir -p $HOME/golang
+    - tar -C $HOME/golang -xvzf go${GO_VERSION}.linux-amd64.tar.gz
+    - wget https://github.com/Masterminds/glide/releases/download/v0.12.3/glide-v0.12.3-linux-amd64.tar.gz
+    - tar -C $HOME/bin -xvzf glide-v0.12.3-linux-amd64.tar.gz --strip=1
+  override:
+    - which go && go version
+    - glide --version
+    - go get -t -d -v ./...
+    - go build -v
+
+# test:
+#   override:
+#     - go build
+
+deployment:
+  release:
+    branch: master
+    owner: treeder
+    commands:
+      - git config --global user.email "treeder@gmail.com"
+      - git config --global user.name "CircleCI"
+      - ./release.sh
