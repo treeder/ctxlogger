@@ -33,4 +33,6 @@ deployment:
     branch: master
     owner: treeder
     commands:
+      - git config --global user.email "treeder@gmail.com"
+      - git config --global user.name "CircleCI"
       - ./release.sh
