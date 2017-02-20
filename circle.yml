@@ -2,6 +2,12 @@
 machine:
   environment:
     GO_VERSION: "1.8"
+    CHECKOUT_DIR: $HOME/$CIRCLE_PROJECT_REPONAME
+    GOPATH: $HOME/go
+    GOROOT: $HOME/golang/go
+    PATH: $GOROOT/bin:$PATH
+    GH_ORG: $GOPATH/src/github.com/treeder
+    GO_PROJECT: $GH_ORG/$CIRCLE_PROJECT_REPONAME
   services:
     - docker
 
@@ -15,10 +21,12 @@ dependencies:
   override:
     - which go && go version
     - glide --version
+    - go get -t -d -v ./...
+    - go build -v
 
-test:
-  override:
-    - go build
+# test:
+#   override:
+#     - go build
 
 deployment:
   release:
@@ -26,4 +34,3 @@ deployment:
     owner: treeder
     commands:
       - ./release.sh
-      
