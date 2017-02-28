@@ -33,7 +33,9 @@ func LoggerWithStack(ctx context.Context, call string) (context.Context, logrus.
 	l := Logger(ctx)
 	entry, ok := l.(*logrus.Entry)
 	if !ok {
-		l.Errorln("The type of the logger wasn't a logrus.Entry, maybe it was the base Logger?")
+		// probably a StandardLogger with no "stack" entry yet
+		l = l.WithField("stack", call)
+		ctx = WithLogger(ctx, l)
 		return ctx, l
 	}
 	// grab the stack field and append to it
